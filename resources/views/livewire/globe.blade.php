@@ -115,7 +115,7 @@
                 const startingPosition = convertToCartesian(startingCords.lat, startingCords.long, sphereRadius + (pipelineSize / 2));
                 const endingPosition = convertToCartesian(startingCords.lat, startingCords.long, sphereRadius + (pipelineSize / 2));
 
-                const pipeline = generatePipelineSegment(gltf.scene, startingPosition, endingPosition, sphereRadius, endingCords, startingCords);
+                const pipeline = generatePipelineSegment(gltf.scene, startingPosition, endingPosition, sphereRadius, endingCords);
 
                 scene.add(pipeline);
             }, undefined, function (error) {
@@ -123,12 +123,12 @@
             });
         }
 
-        function generatePipelineSegment(pipelineObj, startingPosition, endingPosition, sphereRadius, endingCords, startingCords) {
-            pipelineObj.scale.set(0.2, 0.2, 0.2)
-            const pipelineSize = sphereRadius * 0.05;
+        function generatePipelineSegment(pipelineObj, startingPosition, endingPosition, sphereRadius, endingCords) {
+            const scale = 0.2;
+            pipelineObj.scale.set(scale, scale, scale);
 
             pipelineObj.position.copy(startingPosition);
-            pipelineObj.lookAt(convertToCartesian(endingCords.lat, endingCords.long, sphereRadius + (pipelineSize / 2)));
+            pipelineObj.lookAt(convertToCartesian(endingCords.lat, endingCords.long, sphereRadius + (sphereRadius * 0.05 / 2)));
 
             return pipelineObj;
         }
