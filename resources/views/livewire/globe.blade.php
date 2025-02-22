@@ -6,6 +6,10 @@
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+        const assets = @json($this->assets);
+
+        console.log(assets);
+
         var scene = new THREE.Scene();
 
         var camera = new THREE.PerspectiveCamera(0.5, window.innerWidth / window.innerHeight, 1, 1000);
@@ -52,7 +56,9 @@
             const lat = 57.118696610829296;
             const long = -2.1350145324081367;
 
-            placeObject(long, lat, scene, sphereRadius, sphereCenter);
+            for (let i = 0; i < assets.length; i++) {
+                placePipeline(assets[i], scene, sphereRadius, sphereCenter);
+            }
         }, undefined, function (error) {
             console.error(error);
         });
@@ -90,6 +96,41 @@
                 coords.lat,
                 coords.lon
             );
+        }
+
+        function placePipeline(subseaPipeline, scene, sphereRadius, sphereCenter) {
+            loader.load('{{asset('img/pipeline/pipeline.gltf')}}', function (gltf) {
+                const startingCords = {
+                    long: subseaPipeline['start_coordinates']['longitude'],
+                    lat: subseaPipeline['start_coordinates']['latitude'],
+                };
+
+                const endingCords = {
+                    long: subseaPipeline['end_coordinates']['longitude'],
+                    lat: subseaPipeline['end_coordinates']['latitude'],
+                };
+
+                const pipelineSize = sphereRadius * 0.05;
+
+                const startingPosition = convertToCartesian(startingCords.lat, startingCords.long, sphereRadius + (pipelineSize / 2));
+                const endingPosition = convertToCartesian(startingCords.lat, startingCords.long, sphereRadius + (pipelineSize / 2));
+
+                const pipeline = generatePipelineSegment(gltf.scene, startingPosition, endingPosition, sphereRadius, endingCords, startingCords);
+
+                scene.add(pipeline);
+            }, undefined, function (error) {
+                console.error(error);
+            });
+        }
+
+        function generatePipelineSegment(pipelineObj, startingPosition, endingPosition, sphereRadius, endingCords, startingCords) {
+            pipelineObj.scale.set(0.2, 0.2, 0.2)
+            const pipelineSize = sphereRadius * 0.05;
+
+            pipelineObj.position.copy(startingPosition);
+            pipelineObj.lookAt(convertToCartesian(endingCords.lat, endingCords.long, sphereRadius + (pipelineSize / 2)));
+
+            return pipelineObj;
         }
 
         function placeObject(long, lat, scene, sphereRadius, sphereCenter) {
