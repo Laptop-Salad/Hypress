@@ -6,14 +6,23 @@
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+        const assets = @json($this->assets);
+
+        console.log(assets);
+
         var scene = new THREE.Scene();
+
         var camera = new THREE.PerspectiveCamera(0.5, window.innerWidth / window.innerHeight, 1, 1000);
         camera.position.set(0, 0, 500);
+
         var renderer = new THREE.WebGLRenderer({
             antialias: true
         });
+
         renderer.setClearColor(0x87CEEB);
+
         var canvas = renderer.domElement
+
         document.getElementById('threeContainer').appendChild(canvas);
 
         var controls = new OrbitControls(camera, renderer.domElement);
@@ -26,13 +35,15 @@
         loader.load('{{asset('img/globe/earth.gltf')}}', function (gltf) {
             console.log(gltf);
             const sphere = gltf.scene;
-            scene.add(sphere);
 
             sphere.position.set(0, 0, 0);
 
-            sphere.rotation.x = -Math.PI / 2;
+            // sphere.rotation.y = Math.PI;
+            // sphere.rotation.x = -Math.PI / 2;
 
-            // Compute bounding box for accurate radius
+            scene.add(sphere);
+
+            // orientation
             const bbox = new THREE.Box3().setFromObject(sphere);
             const sphereCenter = new THREE.Vector3();
             const sphereSize = new THREE.Vector3();
@@ -41,10 +52,13 @@
 
             const sphereRadius = Math.max(sphereSize.x, sphereSize.y, sphereSize.z) / 2;
 
+            // RGU Cords
             const lat = 57.118696610829296;
             const long = -2.1350145324081367;
 
-            placeObject(long, lat, scene, sphereRadius, sphereCenter);
+            for (let i = 0; i < assets.length; i++) {
+                placePipeline(assets[i], scene, sphereRadius, sphereCenter);
+            }
         }, undefined, function (error) {
             console.error(error);
         });
@@ -72,15 +86,9 @@
         }
 
         function convertToCartesian(lat, lon, radius) {
-            let x = radius * Math.cos(lat) * Math.cos(lon)
-            let y = radius * Math.cos(lat) * Math.sin(lon)
-            let z = radius * Math.sin(lat);
-
-            console.log(new THREE.Vector3(x, y, z));
-
             let coords = {
                 lat: THREE.MathUtils.degToRad(90 - lat),
-                lon: THREE.MathUtils.degToRad(lon)
+                lon: THREE.MathUtils.degToRad(-lon + 180)
             };
 
             return new THREE.Vector3().setFromSphericalCoords(
@@ -90,8 +98,42 @@
             );
         }
 
+        function placePipeline(subseaPipeline, scene, sphereRadius, sphereCenter) {
+            loader.load('{{asset('img/pipeline/pipeline.gltf')}}', function (gltf) {
+                const startingCords = {
+                    long: subseaPipeline['start_coordinates']['longitude'],
+                    lat: subseaPipeline['start_coordinates']['latitude'],
+                };
+
+                const endingCords = {
+                    long: subseaPipeline['end_coordinates']['longitude'],
+                    lat: subseaPipeline['end_coordinates']['latitude'],
+                };
+
+                const pipelineSize = sphereRadius * 0.05;
+
+                const startingPosition = convertToCartesian(startingCords.lat, startingCords.long, sphereRadius + (pipelineSize / 2));
+                const endingPosition = convertToCartesian(startingCords.lat, startingCords.long, sphereRadius + (pipelineSize / 2));
+
+                const pipeline = generatePipelineSegment(gltf.scene, startingPosition, endingPosition, sphereRadius, endingCords, startingCords);
+
+                scene.add(pipeline);
+            }, undefined, function (error) {
+                console.error(error);
+            });
+        }
+
+        function generatePipelineSegment(pipelineObj, startingPosition, endingPosition, sphereRadius, endingCords, startingCords) {
+            pipelineObj.scale.set(0.2, 0.2, 0.2)
+            const pipelineSize = sphereRadius * 0.05;
+
+            pipelineObj.position.copy(startingPosition);
+            pipelineObj.lookAt(convertToCartesian(endingCords.lat, endingCords.long, sphereRadius + (pipelineSize / 2)));
+
+            return pipelineObj;
+        }
+
         function placeObject(long, lat, scene, sphereRadius, sphereCenter) {
-            // Create Cube
             const cubeSize = sphereRadius * 0.05;
             const cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
             const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
@@ -99,10 +141,8 @@
 
             const position = convertToCartesian(lat, long, sphereRadius + (cubeSize / 2));
 
-            // Position cube on the sphere
             cube.position.copy(position);
 
-            // Make cube face outward
             cube.lookAt(sphereCenter);
 
             scene.add(cube);

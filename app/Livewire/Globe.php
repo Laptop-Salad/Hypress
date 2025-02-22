@@ -2,12 +2,20 @@
 
 namespace App\Livewire;
 
+use App\Models\SubseaPipeline;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class Globe extends Component
 {
-    public function render()
-    {
+    #[Computed]
+    public function assets() {
+        $pipelines = SubseaPipeline::all();
+
+        return $pipelines->toArray();
+    }
+
+    public function render() {
         return view('livewire.globe');
     }
 }
