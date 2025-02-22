@@ -18,6 +18,15 @@ enum AssetType: int
         return str($this->name)->replace('_', ' ')->toString();
     }
 
+    public function icon(): string {
+        return match ($this) {
+            self::Point_Of_Interest => 'fa-solid fa-location-dot',
+            self::Subsea_Pipeline => 'fa-solid fa-pipe-section',
+            self::Subsea_Asset => 'fa-solid fa-container-storage',
+            self::Surf_Vessel => 'fa-solid fa-ship',
+        };
+    }
+
     public static function fromClass($class) {
         return match ($class) {
             PointsOfInterest::class => self::Point_Of_Interest,

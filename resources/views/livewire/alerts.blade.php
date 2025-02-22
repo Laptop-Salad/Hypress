@@ -9,9 +9,17 @@
 
         <div>
             @foreach($this->alerts as $alert)
-                <div class="border-b py-2 px-5">
+                @php($enum = \App\Enums\AssetType::fromClass($alert->alertable_type))
+                <div class="border-b py-1 px-5">
                    <p>{{$alert->alert}}</p>
-                    <p class="text-sm text-gray-400">{{\App\Enums\AssetType::fromClass($alert->alertable_type)->display()}}</p>
+                    <p class="text-sm text-gray-400 mt-2">
+                        <i class="{{$enum->icon()}} me-1"></i>
+                        {{$enum->display()}}
+
+                        |
+
+                        {{$alert->alertable->name}}
+                    </p>
                 </div>
             @endforeach
 
