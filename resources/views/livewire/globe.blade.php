@@ -37,7 +37,7 @@
 
             sphere.rotation.x = -Math.PI / 2;
 
-            // orientationwqa6§§§§§§§§
+            // orientation
             const bbox = new THREE.Box3().setFromObject(sphere);
             const sphereCenter = new THREE.Vector3();
             const sphereSize = new THREE.Vector3();
