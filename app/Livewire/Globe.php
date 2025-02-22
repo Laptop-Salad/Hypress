@@ -6,8 +6,7 @@ use Livewire\Component;
 
 class Globe extends Component
 {
-    public function render()
-    {
+    public function render() {
         return view('livewire.globe');
     }
 }

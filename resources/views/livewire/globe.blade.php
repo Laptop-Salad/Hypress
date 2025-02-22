@@ -31,11 +31,13 @@
         loader.load('{{asset('img/globe/earth.gltf')}}', function (gltf) {
             console.log(gltf);
             const sphere = gltf.scene;
-            scene.add(sphere);
 
             sphere.position.set(0, 0, 0);
 
-            sphere.rotation.x = -Math.PI / 2;
+            // sphere.rotation.y = Math.PI;
+            // sphere.rotation.x = -Math.PI / 2;
+
+            scene.add(sphere);
 
             // orientation
             const bbox = new THREE.Box3().setFromObject(sphere);
@@ -78,18 +80,9 @@
         }
 
         function convertToCartesian(lat, lon, radius) {
-            // option 1: mathy way
-            let x = radius * Math.cos(lat) * Math.cos(lon)
-            let y = radius * Math.cos(lat) * Math.sin(lon)
-            let z = radius * Math.sin(lat);
-
-            console.log(new THREE.Vector3(x, y, z));
-
-
-            // option 2: threejs way
             let coords = {
                 lat: THREE.MathUtils.degToRad(90 - lat),
-                lon: THREE.MathUtils.degToRad(lon)
+                lon: THREE.MathUtils.degToRad(-lon + 180)
             };
 
             return new THREE.Vector3().setFromSphericalCoords(
