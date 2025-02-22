@@ -28,7 +28,11 @@
             const sphere = gltf.scene;
             scene.add(sphere);
 
-            // Compute bounding box to find sphere size
+            sphere.position.set(0, 0, 0);
+
+            sphere.rotation.x = -Math.PI / 2;
+
+            // Compute bounding box for accurate radius
             const bbox = new THREE.Box3().setFromObject(sphere);
             const sphereCenter = new THREE.Vector3();
             const sphereSize = new THREE.Vector3();
@@ -37,21 +41,10 @@
 
             const sphereRadius = Math.max(sphereSize.x, sphereSize.y, sphereSize.z) / 2;
 
-            // Create Cube
-            const cubeSize = sphereRadius * 0.2; // Cube size relative to sphere
-            const cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
-            const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-            const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+            const lat = 57.118696610829296;
+            const long = -2.1350145324081367;
 
-            // Position cube on top of the sphere
-            cube.position.set(
-                sphereCenter.x,
-                sphereCenter.y + sphereRadius + (cubeSize / 2),
-                sphereCenter.z
-            );
-
-            scene.add(cube);
-
+            placeObject(long, lat, scene, sphereRadius, sphereCenter);
         }, undefined, function (error) {
             console.error(error);
         });
@@ -79,14 +72,40 @@
         }
 
         function convertToCartesian(lat, lon, radius) {
-            const phi = (90 - lat) * (Math.PI / 180);
-            const theta = (lon + 180) * (Math.PI / 180);
+            let x = radius * Math.cos(lat) * Math.cos(lon)
+            let y = radius * Math.cos(lat) * Math.sin(lon)
+            let z = radius * Math.sin(lat);
 
-            const x = radius * Math.sin(phi) * Math.cos(theta);
-            const y = radius * Math.cos(phi);
-            const z = radius * Math.sin(phi) * Math.sin(theta);
+            console.log(new THREE.Vector3(x, y, z));
 
-            return new THREE.Vector3(x, y, z);
+            let coords = {
+                lat: THREE.MathUtils.degToRad(90 - lat),
+                lon: THREE.MathUtils.degToRad(lon)
+            };
+
+            return new THREE.Vector3().setFromSphericalCoords(
+                radius,
+                coords.lat,
+                coords.lon
+            );
+        }
+
+        function placeObject(long, lat, scene, sphereRadius, sphereCenter) {
+            // Create Cube
+            const cubeSize = sphereRadius * 0.05;
+            const cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
+            const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+            const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+
+            const position = convertToCartesian(lat, long, sphereRadius + (cubeSize / 2));
+
+            // Position cube on the sphere
+            cube.position.copy(position);
+
+            // Make cube face outward
+            cube.lookAt(sphereCenter);
+
+            scene.add(cube);
         }
     </script>
 </div>
