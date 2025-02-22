@@ -6,10 +6,6 @@
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-        const assets = @json($this->assets);
-
-        console.log(assets);
-
         var scene = new THREE.Scene();
 
         var camera = new THREE.PerspectiveCamera(0.5, window.innerWidth / window.innerHeight, 1, 1000);
@@ -52,12 +48,18 @@
 
             const sphereRadius = Math.max(sphereSize.x, sphereSize.y, sphereSize.z) / 2;
 
-            // RGU Cords
-            const lat = 57.118696610829296;
-            const long = -2.1350145324081367;
+            /** Pipelines **/
+            const pipelines = @json($this->pipelines);
+
+            for (let i = 0; i < pipelines.length; i++) {
+                placePipeline(pipelines[i], scene, sphereRadius, sphereCenter);
+            }
+
+            /** Assets **/
+            const assets = @json($this->assets);
 
             for (let i = 0; i < assets.length; i++) {
-                placePipeline(assets[i], scene, sphereRadius, sphereCenter);
+                placeAsset(scene, assets[i]['coordinates']['longitude'], assets[i]['coordinates']['latitude'], sphereRadius, sphereCenter);
             }
         }, undefined, function (error) {
             console.error(error);
@@ -134,11 +136,6 @@
         }
 
         function placeObject(long, lat, scene, sphereRadius, sphereCenter) {
-            const cubeSize = sphereRadius * 0.05;
-            const cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
-            const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-            const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-
             const position = convertToCartesian(lat, long, sphereRadius + (cubeSize / 2));
 
             cube.position.copy(position);
@@ -146,6 +143,21 @@
             cube.lookAt(sphereCenter);
 
             scene.add(cube);
+        }
+
+        function placeAsset(scene, long, lat, radius, center) {
+            loader.load('{{asset('img/rectangle/scene.gltf')}}', function (gltf) {
+                const asset = gltf.scene;
+                const position = convertToCartesian(lat, long, radius);
+
+                asset.position.copy(position);
+
+                asset.lookAt(center);
+
+                scene.add(asset);
+            }, undefined, function (error) {
+                console.error(error);
+            });
         }
     </script>
 </div>
