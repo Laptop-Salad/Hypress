@@ -13,6 +13,15 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <script type="importmap">
+            {
+              "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.173.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.173.0/examples/jsm/"
+              }
+            }
+        </script>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
