@@ -126,7 +126,7 @@
         }
 
         function generatePipelineSegment(pipelineObj, startingPosition, endingPosition, sphereRadius, endingCords) {
-            const scale = 0.2;
+            const scale = 0.05;
             pipelineObj.scale.set(scale, scale, scale);
 
             pipelineObj.position.copy(startingPosition);
@@ -146,11 +146,14 @@
         }
 
         function placeAsset(scene, long, lat, radius, center) {
-            loader.load('{{asset('img/rectangle/scene.gltf')}}', function (gltf) {
+            loader.load('{{asset('img/assets/assets.gltf')}}', function (gltf) {
                 const asset = gltf.scene;
                 const position = convertToCartesian(lat, long, radius);
 
                 asset.position.copy(position);
+
+                const scale = 0.05;
+                asset.scale.set(scale, scale, scale);
 
                 asset.lookAt(center);
 
