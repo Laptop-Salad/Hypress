@@ -47,6 +47,8 @@ class GetSubseaPipelines extends Command
             ]);
 
             foreach ($pipeline['alerts'] as $alert) {
+                if ($alert === 'None') { continue; }
+
                 Alert::create([
                     'alertable_id' => $subsea_pipeline->id,
                     'alertable_type' => SubseaPipeline::class,

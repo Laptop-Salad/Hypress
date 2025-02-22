@@ -47,6 +47,8 @@ class GetSubseaAssets extends Command
             ]);
 
             foreach ($asset['alerts'] as $alert) {
+                if ($alert === 'None') { continue; }
+
                 Alert::create([
                     'alertable_id' => $subsea_asset->id,
                     'alertable_type' => SubseaAsset::class,

@@ -7,13 +7,18 @@
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
         var scene = new THREE.Scene();
+
         var camera = new THREE.PerspectiveCamera(0.5, window.innerWidth / window.innerHeight, 1, 1000);
         camera.position.set(0, 0, 500);
+
         var renderer = new THREE.WebGLRenderer({
             antialias: true
         });
+
         renderer.setClearColor(0x87CEEB);
+
         var canvas = renderer.domElement
+
         document.getElementById('threeContainer').appendChild(canvas);
 
         var controls = new OrbitControls(camera, renderer.domElement);
@@ -32,7 +37,7 @@
 
             sphere.rotation.x = -Math.PI / 2;
 
-            // Compute bounding box for accurate radius
+            // orientationwqa6§§§§§§§§
             const bbox = new THREE.Box3().setFromObject(sphere);
             const sphereCenter = new THREE.Vector3();
             const sphereSize = new THREE.Vector3();
@@ -41,6 +46,7 @@
 
             const sphereRadius = Math.max(sphereSize.x, sphereSize.y, sphereSize.z) / 2;
 
+            // RGU Cords
             const lat = 57.118696610829296;
             const long = -2.1350145324081367;
 
@@ -72,12 +78,15 @@
         }
 
         function convertToCartesian(lat, lon, radius) {
+            // option 1: mathy way
             let x = radius * Math.cos(lat) * Math.cos(lon)
             let y = radius * Math.cos(lat) * Math.sin(lon)
             let z = radius * Math.sin(lat);
 
             console.log(new THREE.Vector3(x, y, z));
 
+
+            // option 2: threejs way
             let coords = {
                 lat: THREE.MathUtils.degToRad(90 - lat),
                 lon: THREE.MathUtils.degToRad(lon)
@@ -91,7 +100,6 @@
         }
 
         function placeObject(long, lat, scene, sphereRadius, sphereCenter) {
-            // Create Cube
             const cubeSize = sphereRadius * 0.05;
             const cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
             const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
@@ -99,10 +107,8 @@
 
             const position = convertToCartesian(lat, long, sphereRadius + (cubeSize / 2));
 
-            // Position cube on the sphere
             cube.position.copy(position);
 
-            // Make cube face outward
             cube.lookAt(sphereCenter);
 
             scene.add(cube);
