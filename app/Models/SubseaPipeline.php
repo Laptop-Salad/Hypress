@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PipelineHealth;
 use Illuminate\Database\Eloquent\Model;
 
 class SubseaPipeline extends Model
@@ -13,5 +14,6 @@ class SubseaPipeline extends Model
         'end_coordinates' => 'json',
         'last_inspection' => 'date',
         'next_maintenance' => 'date',
+        'health' => PipelineHealth::class
     ];
 }

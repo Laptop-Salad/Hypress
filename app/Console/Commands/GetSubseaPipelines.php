@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\PipelineHealth;
 use App\Models\Alert;
 use App\Models\SubseaPipeline;
 use Illuminate\Console\Command;
@@ -37,7 +38,7 @@ class GetSubseaPipelines extends Command
                 'end_coordinates' => $pipeline['end_coordinates']['coordinates'],
                 'start_depth' => $pipeline['start_coordinates']['depth'],
                 'end_depth' => $pipeline['end_coordinates']['depth'],
-                'health' => $pipeline['health'],
+                'health' => PipelineHealth::tryFromName($pipeline['health']),
                 'pressure' => $pipeline['pressure'],
                 'temperature' => $pipeline['temperature'],
                 'flow_rate' => $pipeline['flow_rate'],
