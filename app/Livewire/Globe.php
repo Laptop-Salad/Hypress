@@ -32,11 +32,6 @@ class Globe extends Component
     }
 
     public function render() {
-        return view('livewire.globe', [
-            'pointsOfInterest' => 'array',
-            'assets' => 'array',
-            'pipelines' => $this->pipelines,
-            'vessels' => 'array',
-        ]);
+        return view('livewire.globe');
     }
 }
