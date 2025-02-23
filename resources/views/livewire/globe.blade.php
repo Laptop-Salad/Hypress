@@ -101,6 +101,9 @@
             const buildingTileset = await Cesium.createOsmBuildingsAsync();
             viewer.scene.primitives.add(buildingTileset);
 
+
+
+
             /** Pipelines **/
             pipelines.forEach(pipeline => {
                 let startCoords = {
