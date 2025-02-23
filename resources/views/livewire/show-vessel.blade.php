@@ -25,6 +25,40 @@
                     </x-card>
 
                     <x-card>
+                        <x-slot:header>
+                            Asset Status
+                        </x-slot:header>
+
+                        <div class="p-5 flex items-center space-x-2">
+                            <p class="text-lg font-semibold">{{$this->vessel->status}}</p>
+                        </div>
+                    </x-card>
+
+                    <x-card>
+                        <x-slot:header>
+                            Asset Destination
+                        </x-slot:header>
+
+                        <div class="p-5 flex items-center space-x-2">
+                            <p class="text-lg font-semibold">{{$this->vessel->destination}}</p>
+                        </div>
+                    </x-card>
+                </div>
+
+                <div class="md:px-5 md:my-0 my-2 space-y-4">
+                    <x-card>
+                        <x-slot:header>Important Dates</x-slot:header>
+                        <div class="md:grid grid-cols-2 p-2 md:space-y-0 space-y-2">
+                            <p class="border-e">Last Inspection Date</p>
+                            <p class="md:px-2 font-semibold md:border-b-0 border-b md:pb-0 pb-2">{{$this->vessel->last_inspection->format('d-m-Y')}}</p>
+                        </div>
+                        <div class="md:grid grid-cols-2 p-2 md:space-y-0 space-y-2">
+                            <p class="border-e">ETA</p>
+                            <p class="md:px-2 font-semibold">{{$this->vessel->eta->format('d-m-Y h:m:s')}}</p>
+                        </div>
+                    </x-card>
+
+                    <x-card>
                         <div class="md:flex justify-center text-sm">
                             <div class="md:border-e py-2 px-4 md:border-b-0 border-b">
                                 <p class="font-semibold pb-2">Temperature</p>
@@ -57,20 +91,6 @@
                                     {{$this->vessel->fuel_level}}
                                 </p>
                             </div>
-                        </div>
-                    </x-card>
-                </div>
-
-                <div class="md:px-5 md:my-0 my-2">
-                    <x-card>
-                        <x-slot:header>Important Dates</x-slot:header>
-                        <div class="md:grid grid-cols-2 p-2 md:space-y-0 space-y-2">
-                            <p class="border-e">Last Inspection Date</p>
-                            <p class="md:px-2 font-semibold md:border-b-0 border-b md:pb-0 pb-2">{{$this->vessel->last_inspection->format('d-m-Y')}}</p>
-                        </div>
-                        <div class="md:grid grid-cols-2 p-2 md:space-y-0 space-y-2">
-                            <p class="border-e">ETA</p>
-                            <p class="md:px-2 font-semibold">{{$this->vessel->eta->format('d-m-Y h:m:s')}}</p>
                         </div>
                     </x-card>
                 </div>

@@ -28,7 +28,7 @@
     <div id="cesiumContainer"></div>
         <!-- Modal -->
         <div id="myModal" class="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 hidden">
-            <div class="bg-white rounded-lg p-8 w-96">
+            <div class="bg-white rounded-lg p-8 w-[90vw] h-[80vh]">
                 <div class="flex justify-between">
                     <h2 id="title" class="text-xl font-semibold"></h2>
                     <button id="closeModal" class="text-gray-400 p-2 rounded">
@@ -38,11 +38,16 @@
 
                 <div>
                     <a id="fullInfoPage" href="" target="_blank" class="text-blue-500 underline">
-                        View full information page
+                        View full information page of
                         <span id="type"></span>
 
                         <i class="fa-solid fa-arrow-up-right-from-square ms-2"></i>
                     </a>
+
+                    <x-short-pipeline />
+                    <x-short-poi />
+                    <x-short-asset />
+                    <x-short-vessel />
                 </div>
             </div>
         </div>
@@ -129,7 +134,8 @@
                 viewer.entities.add({
                     type: 'pipeline',
                     dbId: pipeline['id'],
-                    name : pipeline['name'],
+                    name: pipeline['name'],
+                    pipeline: pipeline,
                     model: {
                         uri: '/img/pipeline/pipeline.gltf',
                         scale: 1.0,
@@ -152,10 +158,37 @@
             const fullInfoPage = document.getElementById('fullInfoPage');
             const title = document.getElementById('title');
 
+            // pipeline spans
+            const pipelineTemp = document.getElementById('pipelineTemperature');
+            const pipelineFlow = document.getElementById('pipelineFlowrate');
+            const pipelineAnomalies = document.getElementById('pipelineAnomalyCount');
+            const pipelinePressure = document.getElementById('pipelinePressure');
+            const pipelineHealth = document.getElementById('pipelineHealth');
+
+            // asset spans
+            const assetTemp = document.getElementById('assetTemperature');
+            const assetFlow = document.getElementById('assetFlowrate');
+            const assetAnomalies = document.getElementById('assetAnomalyCount');
+            const assetPressure = document.getElementById('assetPressure');
+            const assetHealth = document.getElementById('assetHealth');
+
+            // vessel spans
+            const vesselETA = document.getElementById('vesselETA');
+            const vesselStatus = document.getElementById('vesselStatus');
+            const vesselDestination = document.getElementById('vesselDestination');
+
+            // poi spans
+            const poiDescription = document.getElementById('poiDescription');
+
             // Handle mouse clicks on the scene
             const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
 
             handler.setInputAction(function (click) {
+                document.getElementById('pipeline').style.display = 'none';
+                document.getElementById('poi').style.display = 'none';
+                document.getElementById('asset').style.display = 'none';
+                document.getElementById('vessel').style.display = 'none';
+
                 // Get the position of the mouse click in the world
                 const pickedObject = viewer.scene.pick(click.position);
 
@@ -168,18 +201,65 @@
                         title.innerHTML = entity.name;
                         type.innerHTML = 'pipeline';
                         fullInfoPage.setAttribute('href', `pipelines/${entity.dbId}`)
+
+                        pipelineTemp.innerHTML = entity.pipeline.temperature;
+                        pipelineFlow.innerHTML = entity.pipeline.flow_rate;
+                        pipelineAnomalies.innerHTML = entity.pipeline.open_anomaly_count;
+                        pipelinePressure.innerHTML = entity.pipeline.pressure;
+                        const PipelineHealth = {
+                            1: 'Healthy',
+                            2: 'Degraded',
+                            3: 'Critical',
+                            4: 'Offline',
+                            5: 'Unknown',
+                            from(value) {
+                                return this[value] || 'Unknown';
+                            }
+                        };
+
+                        pipelineHealth.innerHTML = PipelineHealth.from(entity.pipeline.health);
+
+                        document.getElementById('pipeline').style.display = 'block';
                     } else if (entity.type === 'asset') {
                         title.innerHTML = entity.name;
                         type.innerHTML = 'asset';
                         fullInfoPage.setAttribute('href', `assets/${entity.dbId}`)
+
+                        assetTemp.innerHTML = entity.asset.temperature;
+                        assetFlow.innerHTML = entity.asset.flow_rate;
+                        assetAnomalies.innerHTML = entity.asset.open_anomaly_count;
+                        assetPressure.innerHTML = entity.asset.pressure;
+                        const PipelineHealth = {
+                            1: 'Healthy',
+                            2: 'Degraded',
+                            3: 'Critical',
+                            4: 'Offline',
+                            5: 'Unknown',
+                            from(value) {
+                                return this[value] || 'Unknown';
+                            }
+                        };
+
+                        assetHealth.innerHTML = PipelineHealth.from(entity.asset.health);
+
+                        document.getElementById('asset').style.display = 'block';
                     } else if (entity.type === 'vessel') {
                         title.innerHTML = entity.name;
                         type.innerHTML = 'vessel';
                         fullInfoPage.setAttribute('href', `vessels/${entity.dbId}`)
+
+                        vesselETA.innerHTML = entity.vessel.eta;
+                        vesselStatus.innerHTML = entity.vessel.status;
+                        vesselDestination.innerHTML = entity.vessel.destination;
+
+                        document.getElementById('vessel').style.display = 'block';
                     } else if (entity.type === 'poi') {
                         title.innerHTML = entity.name;
                         type.innerHTML = 'point of interest';
+                        poiDescription.innerHTML = entity.description;
                         fullInfoPage.setAttribute('href', `pois/${entity.dbId}`)
+
+                        document.getElementById('poi').style.display = 'block';
                     }
                 } else {
                     // Hide the popup if no object is clicked
@@ -194,6 +274,7 @@
                     type: 'asset',
                     dbId: asset['id'],
                     name: asset.name,
+                    asset: asset,
                     position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
                     model: {
                         uri: '/img/assets/assets.gltf',
@@ -210,6 +291,7 @@
                     type: 'vessel',
                     dbId: vessel['id'],
                     name: vessel.name,
+                    vessel: vessel,
                     position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
                     model: {
                         uri: '/img/vessel/boat.gltf',
