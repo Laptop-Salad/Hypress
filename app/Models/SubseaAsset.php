@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PipelineHealth;
 use Illuminate\Database\Eloquent\Model;
 
 class SubseaAsset extends Model
@@ -11,6 +12,7 @@ class SubseaAsset extends Model
     protected $casts = [
         'coordinates' => 'json',
         'last_inspection' => 'date',
-        'next_maintenance' => 'date'
+        'next_maintenance' => 'date',
+        'health' => PipelineHealth::class,
     ];
 }
