@@ -136,30 +136,6 @@
         }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
 
-        //
-        // viewer.entities.add({
-        //     position: Cesium.Cartesian3.fromDegrees(2.6, 60.2),
-        //     ellipse: {
-        //         semiMinorAxis: 100000.0,
-        //         semiMajorAxis: 200000.0,
-        //         height: 300.0,
-        //         extrudedHeight: 700000.0,
-        //         rotation: Cesium.Math.toRadians(-40.0),
-        //         material: Cesium.Color.fromRandom({ alpha: 1.0 }),
-        //     },
-        // });
-
-        {{--viewer.entities.add({--}}
-        {{--    name: 'Subsea Asset',--}}
-        {{--    position: Cesium.Cartesian3.fromDegrees(2.6, 60.2),--}}
-        {{--    model: {--}}
-        {{--        uri: '{{asset('img/assets/assets.gltf')}}',--}}
-        {{--        scale: 1,--}}
-        {{--        minimumPixelSize: 64,--}}
-        {{--    },--}}
-        {{--});--}}
-
-
         const assets = @json($this->assets);
 
         assets.forEach((asset) => {
