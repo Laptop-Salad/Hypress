@@ -143,7 +143,6 @@
                 });
             });
 
-
             // Popup element
             const popup = document.getElementById('myModal');
             const type = document.getElementById('type');
