@@ -24,6 +24,16 @@ enum PipelineHealth: int
         };
     }
 
+    public function textColour() {
+        return match ($this) {
+            self::Healthy => 'text-green-500',
+            self::Degraded => 'text-amber-500',
+            self::Critical => 'text-red-500',
+            self::Offline => 'text-gray-500',
+            self::Unknown => '',
+        };
+    }
+
     public static function tryFromName($name) {
         return match ($name) {
             'Healthy' => self::Healthy,

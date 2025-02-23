@@ -17,5 +17,14 @@ export default {
         },
     },
 
+    safelist: [
+        'text-green-500',
+        'text-amber-500',
+        'text-red-500',
+        {
+            pattern: /bg-*-.+/,
+        }
+    ],
+
     plugins: [forms],
 };
