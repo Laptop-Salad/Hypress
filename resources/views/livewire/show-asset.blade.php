@@ -85,6 +85,10 @@
                             <p class="md:px-2 font-semibold">{{$this->asset->next_maintenance->format('d-m-Y')}}</p>
                         </div>
                     </x-card>
+
+                    <x-card class="mt-4">
+                        <livewire:subsea-assets :connected="$this->asset" />
+                    </x-card>
                 </div>
             </div>
         </div>
