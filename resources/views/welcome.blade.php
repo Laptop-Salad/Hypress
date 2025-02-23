@@ -26,7 +26,7 @@
     <div class="relative w-full max-w-2xl px-6 lg:max-w-7xl">
         <header class="fixed top-0 left-0 w-full bg-gray-800 py-4 shadow-md z-50">
             <div class="flex justify-between items-center px-6">
-                <div class="text-lg font-bold" style="color: white;">Hypress</div>
+                <div class="text-lg font-bold" style="color: white;">Hypress Global</div>
                 <nav>
                     @if (Route::has('login'))
                         <livewire:welcome.navigation class="nav-link" />
