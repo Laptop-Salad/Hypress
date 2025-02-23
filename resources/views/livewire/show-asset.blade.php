@@ -87,6 +87,8 @@
                     </x-card>
 
                     <x-card class="mt-4">
+                        <x-slot:header>Connected Assets</x-slot:header>
+
                         <livewire:subsea-assets :connected="$this->asset" />
                     </x-card>
                 </div>
