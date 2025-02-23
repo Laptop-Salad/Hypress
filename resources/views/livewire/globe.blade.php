@@ -81,7 +81,7 @@
 
             viewer.entities.add({
                 type: 'pipeline',
-                id: pipeline['id'],
+                dbId: pipeline['id'],
                 name : pipeline['name'],
                 model: {
                     uri: '/img/pipeline/pipeline.gltf',
@@ -127,7 +127,19 @@
                 if (entity.type === 'pipeline') {
                     title.innerHTML = entity.name;
                     type.innerHTML = 'pipeline';
-                    fullInfoPage.setAttribute('href', `pipelines/${entity.id}`)
+                    fullInfoPage.setAttribute('href', `pipelines/${entity.dbId}`)
+                } else if (entity.type === 'asset') {
+                    title.innerHTML = entity.name;
+                    type.innerHTML = 'asset';
+                    fullInfoPage.setAttribute('href', `assets/${entity.dbId}`)
+                } else if (entity.type === 'vessel') {
+                    title.innerHTML = entity.name;
+                    type.innerHTML = 'vessel';
+                    fullInfoPage.setAttribute('href', `vessels/${entity.dbId}`)
+                } else if (entity.type === 'poi') {
+                    title.innerHTML = entity.name;
+                    type.innerHTML = 'point of interest';
+                    fullInfoPage.setAttribute('href', `pois/${entity.dbId}`)
                 }
             } else {
                 // Hide the popup if no object is clicked
@@ -141,6 +153,8 @@
         assets.forEach((asset) => {
             const { latitude, longitude } = asset.coordinates;
             viewer.entities.add({
+                type: 'asset',
+                dbId: asset['id'],
                 name: asset.name,
                 position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
                 model: {
@@ -157,6 +171,8 @@
         vessels.forEach((vessel) => {
             const { latitude, longitude } = vessel.coordinates;
             viewer.entities.add({
+                type: 'vessel',
+                dbId: vessel['id'],
                 name: vessel.name,
                 position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
                 model: {
@@ -178,6 +194,8 @@
             // Make sure coordinates are in the expected format (object with latitude and longitude)
             const { latitude, longitude } = poi.coordinates;
             viewer.entities.add({
+                type: 'poi',
+                dbId: poi['id'],
                 name: poi.name,
                 position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
                 model: {
