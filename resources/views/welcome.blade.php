@@ -14,16 +14,22 @@
 
     <!-- Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <style>
+        nav a {
+            color: white !important;
+        }
+    </style>
 </head>
 <body class="antialiased font-sans" style="background-color: #202433;">
 <div class="relative min-h-screen flex flex-col items-center justify-center">
     <div class="relative w-full max-w-2xl px-6 lg:max-w-7xl">
-        <header class="fixed top-0 left-0 w-full bg-gray-800 text-white py-4 shadow-md z-50">
+        <header class="fixed top-0 left-0 w-full bg-gray-800 py-4 shadow-md z-50">
             <div class="flex justify-between items-center px-6">
-                <div class="text-lg font-bold">Hypress</div>
+                <div class="text-lg font-bold" style="color: white;">Hypress</div>
                 <nav>
                     @if (Route::has('login'))
-                        <livewire:welcome.navigation />
+                        <livewire:welcome.navigation class="nav-link" />
                     @endif
                 </nav>
             </div>
