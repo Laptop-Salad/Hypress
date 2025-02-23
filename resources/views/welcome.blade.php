@@ -35,8 +35,8 @@
             </div>
         </header>
         <main class="flex flex-col items-center justify-center mt-20">
-            <h1 class="text-4xl font-bold text-white bg-[#48067a] px-2 py-1 rounded-md">Welcome to Hypress</h1>
-            <p class="text-xl text-white mt-4">Subsea assets and pipelines</p>
+            <h1 class="text-4xl font-bold text-white bg-[#48067a] px-2 py-1 rounded-md">Welcome to Hypress Global</h1>
+            <p class="text-xl text-white mt-4">Subsea assets and pipelines tracking and visualisation.</p>
         </main>
     </div>
 </div>
