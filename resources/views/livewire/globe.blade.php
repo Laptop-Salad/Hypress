@@ -88,12 +88,6 @@
                     scale: 1.0,
                     minimumPixelSize: 64,
                 },
-                description: `
-                    <h3>Pipeline Info</h3>
-                    <a href="pipeline/${pipeline["id"]}" target="_blank">See full details</a>
-                    <p><b>Start:</b> ${startCoords.lat.toFixed(4)}, ${startCoords.long.toFixed(4)}</p>
-                    <p><b>End:</b> ${endCoords.lat.toFixed(4)}, ${endCoords.long.toFixed(4)}</p>
-                `,
                 polyline: {
                     positions: positions,
                     width: 10.0,
