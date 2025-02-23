@@ -11,7 +11,7 @@
                 <div class="space-y-4">
                     <x-card>
                         <x-slot:header>
-                            Pipeline Health
+                            Asset Health
                         </x-slot:header>
 
                         <div class="p-5 flex items-center space-x-2">

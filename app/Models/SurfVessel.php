@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class SurfVessel extends Model
 {
@@ -13,4 +14,8 @@ class SurfVessel extends Model
         'last_inspection' => 'date',
         'coordinates' => 'json',
     ];
+
+    public function alerts(): MorphMany {
+        return $this->morphMany(Alert::class, 'alertable');
+    }
 }
