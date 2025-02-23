@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\PipelineHealth;
 use App\Models\Alert;
 use App\Models\ConnectedSubseaAsset;
 use App\Models\SubseaAsset;
@@ -36,7 +37,7 @@ class GetSubseaAssets extends Command
                 'coordinates' => $asset['coordinates']['coordinates'],
                 'name' => $asset['name'],
                 'depth' => $asset['coordinates']['depth'],
-                'health' => $asset['health'],
+                'health' => PipelineHealth::tryFromName($asset['health']),
                 'pressure' => $asset['pressure'],
                 'temperature' => $asset['temperature'],
                 'flow_rate' => $asset['flow_rate'],
