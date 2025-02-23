@@ -18,53 +18,52 @@
         viewer.scene.primitives.add(buildingTileset);
 
         /** Pipelines **/
-        let pipelines = @json($this->pipelines);
 
-        for (let i = 0; i < pipelines.length; i++) {
-            let pipeline = pipelines[i];
+            const pipelines = @json($pipelines);
+            pipelines.forEach(pipeline => {
+                let startCoords = {
+                    lat: pipeline['start_coordinates']['latitude'],
+                    long: pipeline['start_coordinates']['longitude'],
+                };
 
-            let startCoords = {
-                lat: pipeline['start_coordinates']['latitude'],
-                long: pipeline['start_coordinates']['longitude'],
-            };
+                let endCoords = {
+                    lat: pipeline['end_coordinates']['latitude'],
+                    long: pipeline['end_coordinates']['longitude'],
+                };
 
-            let endCoords = {
-                lat: pipeline['end_coordinates']['latitude'],
-                long: pipeline['end_coordinates']['longitude'],
-            };
+                let positions = [];
+                const steps = 40; // Number of interpolated points
 
-            let positions = [];
-            const steps = 40; // Number of interpolated points
+                for (let i = 0; i <= steps; ++i) {
+                    let t = i / steps;
+                    let interpolatedLat = Cesium.Math.lerp(startCoords.lat, endCoords.lat, t);
+                    let interpolatedLong = Cesium.Math.lerp(startCoords.long, endCoords.long, t);
+                    positions.push(Cesium.Cartesian3.fromDegrees(interpolatedLong, interpolatedLat));
+                }
 
-            for (let i = 0; i <= steps; ++i) {
-                // Linear interpolation factor (0 to 1)
-                let t = i / steps;
-
-                // Interpolated latitude and longitude
-                let interpolatedLat = Cesium.Math.lerp(startCoords.lat, endCoords.lat, t);
-                let interpolatedLong = Cesium.Math.lerp(startCoords.long, endCoords.long, t);
-
-                positions.push(Cesium.Cartesian3.fromDegrees(interpolatedLong, interpolatedLat));
-            }
-
-            viewer.entities.add({
-                name : pipeline['name'],
-                description: `
+                viewer.entities.add({
+                    name : pipeline['name'],
+                    model: {
+                        uri: '/img/pipeline/pipeline.gltf',
+                        scale: 1.0,
+                        minimumPixelSize: 64,
+                    },
+                    description: `
                     <h3>Pipeline Info</h3>
-                    <a href="pipelines/${pipeline["id"]}" target="_blank">See the full information for this pipeline</a>
-                    <p><b>Start Coordinates:</b> ${startCoords.lat.toFixed(4)}, ${startCoords.long.toFixed(4)}</p>
-                    <p><b>End Coordinates:</b> ${endCoords.lat.toFixed(4)}, ${endCoords.long.toFixed(4)}</p>
+                    <a href="pipeline/${pipeline["id"]}" target="_blank">See full details</a>
+                    <p><b>Start:</b> ${startCoords.lat.toFixed(4)}, ${startCoords.long.toFixed(4)}</p>
+                    <p><b>End:</b> ${endCoords.lat.toFixed(4)}, ${endCoords.long.toFixed(4)}</p>
                 `,
-                polyline: {
-                    positions: positions,
-                    width: 10.0,
-                    material: new Cesium.PolylineGlowMaterialProperty({
-                        color: Cesium.Color.DEEPSKYBLUE,
-                        glowPower: 0.25,
-                    }),
-                },
+                    polyline: {
+                        positions: positions,
+                        width: 10.0,
+                        material: new Cesium.PolylineGlowMaterialProperty({
+                            color: Cesium.Color.DEEPSKYBLUE,
+                            glowPower: 0.25,
+                        }),
+                    },
+                });
             });
-        }
 
         //
         // viewer.entities.add({
@@ -89,16 +88,24 @@
         {{--    },--}}
         {{--});--}}
 
-        // Add a test subsea asset (already working)
-        viewer.entities.add({
-            name: 'Subsea Asset',
-            position: Cesium.Cartesian3.fromDegrees(2.6, 60.2),
-            model: {
-                uri: '{{ asset("img/assets/assets.gltf") }}',
-                scale: 1,
-                minimumPixelSize: 64,
-            },
+
+        const assets = @json($this->assets);
+
+        assets.forEach((asset) => {
+            const { latitude, longitude } = asset.coordinates;
+            viewer.entities.add({
+                name: asset.name,
+                position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
+                model: {
+                    uri: '/img/assets/assets.gltf',
+                    scale: 1.0,
+                    minimumPixelSize: 64,
+                },
+
         });
+        });
+
+
 
         // Embed points of interest data from Livewire/PHP
         const pointsOfInterest = @json($this->points_of_interest);
