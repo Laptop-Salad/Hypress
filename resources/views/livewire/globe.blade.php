@@ -5,7 +5,38 @@
     @endpush
 
     <div id="cesiumContainer"></div>
-    <script type="module">
+
+        <!-- Modal Trigger Button -->
+        <button id="openModal" class="bg-blue-500 text-white p-2 rounded">Open Modal</button>
+
+        <!-- Modal -->
+        <div id="myModal" class="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 hidden">
+            <div class="bg-white rounded-lg p-8 w-96">
+                <div class="flex justify-between">
+                    <h2 id="title" class="text-xl font-semibold"></h2>
+                    <button id="closeModal" class="text-gray-400 p-2 rounded">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div>
+                    <a id="fullInfoPage" href="" target="_blank" class="text-blue-500 underline">
+                        View full information page
+                        <span id="type"></span>
+
+                        <i class="fa-solid fa-arrow-up-right-from-square ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <script type="module">
+        const closeModal = document.getElementById('closeModal');
+
+        closeModal.addEventListener('click', function () {
+            document.getElementById('myModal').style.display = 'none';
+        })
+
         Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1ZTk0NTMxMy02NDQ5LTRiN2QtOGFjOC00YWE0N2Q5YWY3MzIiLCJpZCI6Mjc4MzA3LCJpYXQiOjE3NDAyNjgyODN9.q9MjXFXh63aczbsyKl9qD6j5-HMKmtItDnw1krBwMVk';
 
         // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
@@ -64,6 +95,60 @@
                     },
                 });
             });
+
+            for (let i = 0; i <= steps; ++i) {
+                // Linear interpolation factor (0 to 1)
+                let t = i / steps;
+
+                // Interpolated latitude and longitude
+                let interpolatedLat = Cesium.Math.lerp(startCoords.lat, endCoords.lat, t);
+                let interpolatedLong = Cesium.Math.lerp(startCoords.long, endCoords.long, t);
+
+                positions.push(Cesium.Cartesian3.fromDegrees(interpolatedLong, interpolatedLat));
+            }
+
+            viewer.entities.add({
+                name : pipeline['name'],
+                polyline: {
+                    positions: positions,
+                    width: 10.0,
+                    material: new Cesium.PolylineGlowMaterialProperty({
+                        color: Cesium.Color.DEEPSKYBLUE,
+                        glowPower: 0.25,
+                    }),
+                },
+                type: 'pipeline',
+                id: pipeline['id'],
+            });
+
+            // Popup element
+            const popup = document.getElementById('myModal');
+            const type = document.getElementById('type');
+            const fullInfoPage = document.getElementById('fullInfoPage');
+            const title = document.getElementById('title');
+
+            // Handle mouse clicks on the scene
+            const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+
+        handler.setInputAction(function (click) {
+            // Get the position of the mouse click in the world
+            const pickedObject = viewer.scene.pick(click.position);
+
+            // Check if an object was clicked
+            if (Cesium.defined(pickedObject)) {
+                let entity = pickedObject.id;
+                popup.style.display = 'flex';
+
+                if (entity.type === 'pipeline') {
+                    title.innerHTML = entity.name;
+                    type.innerHTML = 'pipeline';
+                    fullInfoPage.setAttribute('href', `pipelines/${entity.id}`)
+                }
+            } else {
+                // Hide the popup if no object is clicked
+                popup.style.display = 'none';
+            }
+        }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
         //
         // viewer.entities.add({
