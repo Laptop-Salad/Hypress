@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\SubseaAsset;
 use App\Models\SubseaPipeline;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -9,10 +10,13 @@ use Livewire\Component;
 class Globe extends Component
 {
     #[Computed]
-    public function assets() {
-        $pipelines = SubseaPipeline::all();
+    public function pipelines() {
+        return SubseaPipeline::all()->toArray();
+    }
 
-        return $pipelines->toArray();
+    #[Computed]
+    public function assets() {
+        return SubseaAsset::all()->toArray();
     }
 
     public function render() {

@@ -1,151 +1,102 @@
 <div>
-    <div id="threeContainer" class="w-[100vw] h-[100vh]"></div>
+    <div id="cesiumContainer"></div>
+
+    <div id="customPopup" style="display: none;">
+        <div id="popupContent"></div>
+        <button id="closePopup">Close</button>
+    </div>
 
     <script type="module">
-        import * as THREE from 'three';
-        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1ZTk0NTMxMy02NDQ5LTRiN2QtOGFjOC00YWE0N2Q5YWY3MzIiLCJpZCI6Mjc4MzA3LCJpYXQiOjE3NDAyNjgyODN9.q9MjXFXh63aczbsyKl9qD6j5-HMKmtItDnw1krBwMVk';
 
-        const assets = @json($this->assets);
-
-        console.log(assets);
-
-        var scene = new THREE.Scene();
-
-        var camera = new THREE.PerspectiveCamera(0.5, window.innerWidth / window.innerHeight, 1, 1000);
-        camera.position.set(0, 0, 500);
-
-        var renderer = new THREE.WebGLRenderer({
-            antialias: true
+        // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
+        const viewer = new Cesium.Viewer('cesiumContainer', {
+            terrain: Cesium.Terrain.fromWorldTerrain(),
         });
 
-        renderer.setClearColor(0x87CEEB);
+        // Fly the camera to San Francisco at the given longitude, latitude, and height.
+        // viewer.camera.flyTo({
+        //     destination: Cesium.Cartesian3.fromDegrees(-122.4175, 37.655, 400),
+        //     orientation: {
+        //         heading: Cesium.Math.toRadians(0.0),
+        //         pitch: Cesium.Math.toRadians(-15.0),
+        //     }
+        // });
 
-        var canvas = renderer.domElement
+        // Add Cesium OSM Buildings, a global 3D buildings layer.
+        const buildingTileset = await Cesium.createOsmBuildingsAsync();
+        viewer.scene.primitives.add(buildingTileset);
 
-        document.getElementById('threeContainer').appendChild(canvas);
+        /** Pipelines **/
+        let pipelines = @json($this->pipelines);
 
-        var controls = new OrbitControls(camera, renderer.domElement);
+        for (let i = 0; i < pipelines.length; i++) {
+            let pipeline = pipelines[i];
 
-        var light = new THREE.HemisphereLight( 0xffffff, 0xffffff, 2.5 );
-        scene.add( light );
-
-        var loader = new GLTFLoader();
-
-        loader.load('{{asset('img/globe/earth.gltf')}}', function (gltf) {
-            console.log(gltf);
-            const sphere = gltf.scene;
-
-            sphere.position.set(0, 0, 0);
-
-            // sphere.rotation.y = Math.PI;
-            // sphere.rotation.x = -Math.PI / 2;
-
-            scene.add(sphere);
-
-            // orientation
-            const bbox = new THREE.Box3().setFromObject(sphere);
-            const sphereCenter = new THREE.Vector3();
-            const sphereSize = new THREE.Vector3();
-            bbox.getCenter(sphereCenter);
-            bbox.getSize(sphereSize);
-
-            const sphereRadius = Math.max(sphereSize.x, sphereSize.y, sphereSize.z) / 2;
-
-            // RGU Cords
-            const lat = 57.118696610829296;
-            const long = -2.1350145324081367;
-
-            for (let i = 0; i < assets.length; i++) {
-                placePipeline(assets[i], scene, sphereRadius, sphereCenter);
-            }
-        }, undefined, function (error) {
-            console.error(error);
-        });
-
-        render();
-
-        function render() {
-            if (resize(renderer)) {
-                camera.aspect = canvas.clientWidth / canvas.clientHeight;
-                camera.updateProjectionMatrix();
-            }
-            renderer.render(scene, camera);
-            requestAnimationFrame(render);
-        }
-
-        function resize(renderer) {
-            const canvas = renderer.domElement;
-            const width = document.getElementById('threeContainer').clientWidth;
-            const height = document.getElementById('threeContainer').clientHeight;
-            const needResize = canvas.width !== width || canvas.height !== height;
-            if (needResize) {
-                renderer.setSize(width, height, false);
-            }
-            return needResize;
-        }
-
-        function convertToCartesian(lat, lon, radius) {
-            let coords = {
-                lat: THREE.MathUtils.degToRad(90 - lat),
-                lon: THREE.MathUtils.degToRad(-lon + 180)
+            let startCoords = {
+                lat: pipeline['start_coordinates']['latitude'],
+                long: pipeline['start_coordinates']['longitude'],
             };
 
-            return new THREE.Vector3().setFromSphericalCoords(
-                radius,
-                coords.lat,
-                coords.lon
-            );
-        }
+            let endCoords = {
+                lat: pipeline['end_coordinates']['latitude'],
+                long: pipeline['end_coordinates']['longitude'],
+            };
 
-        function placePipeline(subseaPipeline, scene, sphereRadius, sphereCenter) {
-            loader.load('{{asset('img/pipeline/pipeline.gltf')}}', function (gltf) {
-                const startingCords = {
-                    long: subseaPipeline['start_coordinates']['longitude'],
-                    lat: subseaPipeline['start_coordinates']['latitude'],
-                };
+            let positions = [];
+            const steps = 40; // Number of interpolated points
 
-                const endingCords = {
-                    long: subseaPipeline['end_coordinates']['longitude'],
-                    lat: subseaPipeline['end_coordinates']['latitude'],
-                };
+            for (let i = 0; i <= steps; ++i) {
+                // Linear interpolation factor (0 to 1)
+                let t = i / steps;
 
-                const pipelineSize = sphereRadius * 0.05;
+                // Interpolated latitude and longitude
+                let interpolatedLat = Cesium.Math.lerp(startCoords.lat, endCoords.lat, t);
+                let interpolatedLong = Cesium.Math.lerp(startCoords.long, endCoords.long, t);
 
-                const startingPosition = convertToCartesian(startingCords.lat, startingCords.long, sphereRadius + (pipelineSize / 2));
-                const endingPosition = convertToCartesian(startingCords.lat, startingCords.long, sphereRadius + (pipelineSize / 2));
+                positions.push(Cesium.Cartesian3.fromDegrees(interpolatedLong, interpolatedLat));
+            }
 
-                const pipeline = generatePipelineSegment(gltf.scene, startingPosition, endingPosition, sphereRadius, endingCords, startingCords);
-
-                scene.add(pipeline);
-            }, undefined, function (error) {
-                console.error(error);
+            viewer.entities.add({
+                name : pipeline['name'],
+                description: `
+                    <h3>Pipeline Info</h3>
+                    <a href="pipeline/${pipeline["id"]}" target="_blank">See the full information for this pipeline</a>
+                    <p><b>Start Coordinates:</b> ${startCoords.lat.toFixed(4)}, ${startCoords.long.toFixed(4)}</p>
+                    <p><b>End Coordinates:</b> ${endCoords.lat.toFixed(4)}, ${endCoords.long.toFixed(4)}</p>
+                `,
+                polyline: {
+                    positions: positions,
+                    width: 10.0,
+                    material: new Cesium.PolylineGlowMaterialProperty({
+                        color: Cesium.Color.DEEPSKYBLUE,
+                        glowPower: 0.25,
+                    }),
+                },
             });
         }
 
-        function generatePipelineSegment(pipelineObj, startingPosition, endingPosition, sphereRadius, endingCords, startingCords) {
-            pipelineObj.scale.set(0.2, 0.2, 0.2)
-            const pipelineSize = sphereRadius * 0.05;
+        //
+        // viewer.entities.add({
+        //     position: Cesium.Cartesian3.fromDegrees(2.6, 60.2),
+        //     ellipse: {
+        //         semiMinorAxis: 100000.0,
+        //         semiMajorAxis: 200000.0,
+        //         height: 300.0,
+        //         extrudedHeight: 700000.0,
+        //         rotation: Cesium.Math.toRadians(-40.0),
+        //         material: Cesium.Color.fromRandom({ alpha: 1.0 }),
+        //     },
+        // });
 
-            pipelineObj.position.copy(startingPosition);
-            pipelineObj.lookAt(convertToCartesian(endingCords.lat, endingCords.long, sphereRadius + (pipelineSize / 2)));
-
-            return pipelineObj;
-        }
-
-        function placeObject(long, lat, scene, sphereRadius, sphereCenter) {
-            const cubeSize = sphereRadius * 0.05;
-            const cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
-            const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-            const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-
-            const position = convertToCartesian(lat, long, sphereRadius + (cubeSize / 2));
-
-            cube.position.copy(position);
-
-            cube.lookAt(sphereCenter);
-
-            scene.add(cube);
-        }
+        {{--viewer.entities.add({--}}
+        {{--    name: 'Subsea Asset',--}}
+        {{--    position: Cesium.Cartesian3.fromDegrees(2.6, 60.2),--}}
+        {{--    model: {--}}
+        {{--        uri: '{{asset('img/assets/assets.gltf')}}',--}}
+        {{--        scale: 1,--}}
+        {{--        minimumPixelSize: 64,--}}
+        {{--    },--}}
+        {{--});--}}
     </script>
 </div>
