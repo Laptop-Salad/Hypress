@@ -14,6 +14,16 @@ enum PipelineHealth: int
         return str($this->name)->replace('_', ' ')->toString();
     }
 
+    public function icon() {
+        return match ($this) {
+            self::Healthy => 'fa-regular fa-wave-pulse',
+            self::Degraded => 'fa-solid fa-wine-glass-crack',
+            self::Critical => 'fa-solid fa-exclamation-triangle',
+            self::Offline => 'fa-solid fa-user-robot-xmarks',
+            self::Unknown => 'fa-solid fa-question',
+        };
+    }
+
     public static function tryFromName($name) {
         return match ($name) {
             'Healthy' => self::Healthy,

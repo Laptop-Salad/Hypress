@@ -11,20 +11,23 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        <script src="https://cesium.com/downloads/cesiumjs/releases/1.126/Build/Cesium/Cesium.js"></script>
-        <link href="https://cesium.com/downloads/cesiumjs/releases/1.126/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+        @stack('head-stuff')
+
+        <!-- FontAwesome -->
+        <script src="https://kit.fontawesome.com/0e98857287.js" crossorigin="anonymous"></script>
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        <script type="importmap">
-            {
-              "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.173.0/build/three.module.js",
-                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.173.0/examples/jsm/"
-              }
-            }
-        </script>
+{{--        <script type="importmap">--}}
+{{--            {--}}
+{{--              "imports": {--}}
+{{--                "three": "https://cdn.jsdelivr.net/npm/three@0.173.0/build/three.module.js",--}}
+{{--                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.173.0/examples/jsm/"--}}
+{{--              }--}}
+{{--            }--}}
+{{--        </script>--}}
+        @livewireScripts
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\PipelineHealth;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class SubseaPipeline extends Model
 {
@@ -16,4 +17,8 @@ class SubseaPipeline extends Model
         'next_maintenance' => 'date',
         'health' => PipelineHealth::class
     ];
+
+    public function alerts(): MorphMany {
+        return $this->morphMany(Alert::class, 'alertable');
+    }
 }

@@ -1,4 +1,9 @@
 <div>
+    @push('head-stuff')
+        <script src="https://cesium.com/downloads/cesiumjs/releases/1.126/Build/Cesium/Cesium.js"></script>
+        <link href="https://cesium.com/downloads/cesiumjs/releases/1.126/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    @endpush
+
     <div id="cesiumContainer"></div>
     <script type="module">
         Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1ZTk0NTMxMy02NDQ5LTRiN2QtOGFjOC00YWE0N2Q5YWY3MzIiLCJpZCI6Mjc4MzA3LCJpYXQiOjE3NDAyNjgyODN9.q9MjXFXh63aczbsyKl9qD6j5-HMKmtItDnw1krBwMVk';
@@ -46,7 +51,7 @@
                 name : pipeline['name'],
                 description: `
                     <h3>Pipeline Info</h3>
-                    <a href="pipeline/${pipeline["id"]}" target="_blank">See the full information for this pipeline</a>
+                    <a href="pipelines/${pipeline["id"]}" target="_blank">See the full information for this pipeline</a>
                     <p><b>Start Coordinates:</b> ${startCoords.lat.toFixed(4)}, ${startCoords.long.toFixed(4)}</p>
                     <p><b>End Coordinates:</b> ${endCoords.lat.toFixed(4)}, ${endCoords.long.toFixed(4)}</p>
                 `,

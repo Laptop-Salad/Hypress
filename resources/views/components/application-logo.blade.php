@@ -1,1 +1,1 @@
-<i class="fa-regular fa-table-tree"></i>
+<i class="fa-regular fa-table-tree fa-lg"></i>
