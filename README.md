@@ -1,3 +1,3 @@
 # Hypress Global
 
-See our live site at: https://hypressglobal.amandawallis.com/globe
+See our live site at: https://hypressglobal.amandawallis.com
