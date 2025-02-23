@@ -97,12 +97,28 @@
                 name: asset.name,
                 position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
                 model: {
-                    uri: '/img/assets/assets.gltf',
+                    uri: '/img/vessel/boat.gltf',
                     scale: 1.0,
                     minimumPixelSize: 64,
                 },
 
         });
+        });
+
+        const vessels = @json($this->vessels);
+
+        vessels.forEach((vessel) => {
+            const { latitude, longitude } = vessel.coordinates;
+            viewer.entities.add({
+                name: vessel.name,
+                position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
+                model: {
+                    uri: '/img/vessel/vessel.gltf',
+                    scale: 1.0,
+                    minimumPixelSize: 64,
+                },
+
+            });
         });
 
 

@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\PointsOfInterest;
 use App\Models\SubseaAsset;
 use App\Models\SubseaPipeline;
+use App\Models\SurfVessel;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -25,11 +26,17 @@ class Globe extends Component
         return PointsOfInterest::all()->toArray();
     }
 
+    #[Computed]
+    public function vessels() {
+        return SurfVessel::all()->toArray();
+    }
+
     public function render() {
         return view('livewire.globe', [
             'pointsOfInterest' => 'array',
             'assets' => 'array',
             'pipelines' => $this->pipelines,
+            'vessels' => 'array',
         ]);
     }
 }
