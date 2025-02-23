@@ -30,7 +30,14 @@
             </div>
         </div>
 
-        <script type="module">
+
+    @push('head-stuff')
+        <script src="https://cesium.com/downloads/cesiumjs/releases/1.126/Build/Cesium/Cesium.js"></script>
+        <link href="https://cesium.com/downloads/cesiumjs/releases/1.126/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    @endpush
+
+    <div id="cesiumContainer"></div>
+    <script type="module">
         const closeModal = document.getElementById('closeModal');
 
         closeModal.addEventListener('click', function () {
@@ -50,65 +57,43 @@
 
         /** Pipelines **/
 
-            const pipelines = @json($pipelines);
-            pipelines.forEach(pipeline => {
-                let startCoords = {
-                    lat: pipeline['start_coordinates']['latitude'],
-                    long: pipeline['start_coordinates']['longitude'],
-                };
+        const pipelines = @json($pipelines);
+        pipelines.forEach(pipeline => {
+            let startCoords = {
+                lat: pipeline['start_coordinates']['latitude'],
+                long: pipeline['start_coordinates']['longitude'],
+            };
 
-                let endCoords = {
-                    lat: pipeline['end_coordinates']['latitude'],
-                    long: pipeline['end_coordinates']['longitude'],
-                };
+            let endCoords = {
+                lat: pipeline['end_coordinates']['latitude'],
+                long: pipeline['end_coordinates']['longitude'],
+            };
 
-                let positions = [];
-                const steps = 40; // Number of interpolated points
+            let positions = [];
+            const steps = 40; // Number of interpolated points
 
-                for (let i = 0; i <= steps; ++i) {
-                    let t = i / steps;
-                    let interpolatedLat = Cesium.Math.lerp(startCoords.lat, endCoords.lat, t);
-                    let interpolatedLong = Cesium.Math.lerp(startCoords.long, endCoords.long, t);
-                    positions.push(Cesium.Cartesian3.fromDegrees(interpolatedLong, interpolatedLat));
-                }
+            for (let i = 0; i <= steps; ++i) {
+                let t = i / steps;
+                let interpolatedLat = Cesium.Math.lerp(startCoords.lat, endCoords.lat, t);
+                let interpolatedLong = Cesium.Math.lerp(startCoords.long, endCoords.long, t);
+                positions.push(Cesium.Cartesian3.fromDegrees(interpolatedLong, interpolatedLat));
+            }
 
-                viewer.entities.add({
-                    name : pipeline['name'],
-                    model: {
-                        uri: '/img/pipeline/pipeline.gltf',
-                        scale: 1.0,
-                        minimumPixelSize: 64,
-                    },
-                    description: `
+            viewer.entities.add({
+                type: 'pipeline',
+                id: pipeline['id'],
+                name : pipeline['name'],
+                model: {
+                    uri: '/img/pipeline/pipeline.gltf',
+                    scale: 1.0,
+                    minimumPixelSize: 64,
+                },
+                description: `
                     <h3>Pipeline Info</h3>
                     <a href="pipeline/${pipeline["id"]}" target="_blank">See full details</a>
                     <p><b>Start:</b> ${startCoords.lat.toFixed(4)}, ${startCoords.long.toFixed(4)}</p>
                     <p><b>End:</b> ${endCoords.lat.toFixed(4)}, ${endCoords.long.toFixed(4)}</p>
                 `,
-                    polyline: {
-                        positions: positions,
-                        width: 10.0,
-                        material: new Cesium.PolylineGlowMaterialProperty({
-                            color: Cesium.Color.DEEPSKYBLUE,
-                            glowPower: 0.25,
-                        }),
-                    },
-                });
-            });
-
-            for (let i = 0; i <= steps; ++i) {
-                // Linear interpolation factor (0 to 1)
-                let t = i / steps;
-
-                // Interpolated latitude and longitude
-                let interpolatedLat = Cesium.Math.lerp(startCoords.lat, endCoords.lat, t);
-                let interpolatedLong = Cesium.Math.lerp(startCoords.long, endCoords.long, t);
-
-                positions.push(Cesium.Cartesian3.fromDegrees(interpolatedLong, interpolatedLat));
-            }
-
-            viewer.entities.add({
-                name : pipeline['name'],
                 polyline: {
                     positions: positions,
                     width: 10.0,
@@ -117,18 +102,18 @@
                         glowPower: 0.25,
                     }),
                 },
-                type: 'pipeline',
-                id: pipeline['id'],
             });
+        });
 
-            // Popup element
-            const popup = document.getElementById('myModal');
-            const type = document.getElementById('type');
-            const fullInfoPage = document.getElementById('fullInfoPage');
-            const title = document.getElementById('title');
 
-            // Handle mouse clicks on the scene
-            const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+        // Popup element
+        const popup = document.getElementById('myModal');
+        const type = document.getElementById('type');
+        const fullInfoPage = document.getElementById('fullInfoPage');
+        const title = document.getElementById('title');
+
+        // Handle mouse clicks on the scene
+        const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
 
         handler.setInputAction(function (click) {
             // Get the position of the mouse click in the world
@@ -149,6 +134,7 @@
                 popup.style.display = 'none';
             }
         }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
 
         //
         // viewer.entities.add({
@@ -187,7 +173,7 @@
                     minimumPixelSize: 64,
                 },
 
-        });
+            });
         });
 
         const vessels = @json($this->vessels);
