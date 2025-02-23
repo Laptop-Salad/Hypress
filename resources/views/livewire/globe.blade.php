@@ -248,7 +248,9 @@
                         type.innerHTML = 'vessel';
                         fullInfoPage.setAttribute('href', `vessels/${entity.dbId}`)
 
-                        vesselETA.innerHTML = entity.vessel.eta;
+                        const date = new Date(entity.vessel.eta);
+
+                        vesselETA.innerHTML = date.toLocaleString();
                         vesselStatus.innerHTML = entity.vessel.status;
                         vesselDestination.innerHTML = entity.vessel.destination;
 
