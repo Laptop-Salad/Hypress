@@ -1,11 +1,5 @@
 <div>
     <div id="cesiumContainer"></div>
-
-    <div id="customPopup" style="display: none;">
-        <div id="popupContent"></div>
-        <button id="closePopup">Close</button>
-    </div>
-
     <script type="module">
         Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1ZTk0NTMxMy02NDQ5LTRiN2QtOGFjOC00YWE0N2Q5YWY3MzIiLCJpZCI6Mjc4MzA3LCJpYXQiOjE3NDAyNjgyODN9.q9MjXFXh63aczbsyKl9qD6j5-HMKmtItDnw1krBwMVk';
 
@@ -13,15 +7,6 @@
         const viewer = new Cesium.Viewer('cesiumContainer', {
             terrain: Cesium.Terrain.fromWorldTerrain(),
         });
-
-        // Fly the camera to San Francisco at the given longitude, latitude, and height.
-        // viewer.camera.flyTo({
-        //     destination: Cesium.Cartesian3.fromDegrees(-122.4175, 37.655, 400),
-        //     orientation: {
-        //         heading: Cesium.Math.toRadians(0.0),
-        //         pitch: Cesium.Math.toRadians(-15.0),
-        //     }
-        // });
 
         // Add Cesium OSM Buildings, a global 3D buildings layer.
         const buildingTileset = await Cesium.createOsmBuildingsAsync();
@@ -98,5 +83,35 @@
         {{--        minimumPixelSize: 64,--}}
         {{--    },--}}
         {{--});--}}
+
+        // Add a test subsea asset (already working)
+        viewer.entities.add({
+            name: 'Subsea Asset',
+            position: Cesium.Cartesian3.fromDegrees(2.6, 60.2),
+            model: {
+                uri: '{{ asset("img/assets/assets.gltf") }}',
+                scale: 1,
+                minimumPixelSize: 64,
+            },
+        });
+
+        // Embed points of interest data from Livewire/PHP
+        const pointsOfInterest = @json($this->points_of_interest);
+
+        // Loop through each point of interest and add it to the viewer
+        pointsOfInterest.forEach((poi) => {
+            // Make sure coordinates are in the expected format (object with latitude and longitude)
+            const { latitude, longitude } = poi.coordinates;
+            viewer.entities.add({
+                name: poi.name,
+                position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
+                model: {
+                    uri: '/img/pointsOfInterest/pointsOfInterest.gltf',
+                    scale: 1.0,
+                    minimumPixelSize: 64,
+                },
+                description: poi.description
+            });
+        });
     </script>
 </div>
