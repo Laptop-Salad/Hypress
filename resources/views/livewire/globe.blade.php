@@ -168,7 +168,7 @@
                 name: asset.name,
                 position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
                 model: {
-                    uri: '/img/vessel/boat.gltf',
+                    uri: '/img/assets/assets.gltf',
                     scale: 1.0,
                     minimumPixelSize: 64,
                 },
@@ -184,7 +184,7 @@
                 name: vessel.name,
                 position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
                 model: {
-                    uri: '/img/vessel/vessel.gltf',
+                    uri: '/img/vessel/boat.gltf',
                     scale: 1.0,
                     minimumPixelSize: 64,
                 },
